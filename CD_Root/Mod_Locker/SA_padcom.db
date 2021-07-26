@@ -1,0 +1,17 @@
+--[[================WAVES INFORMATICA================
+==========DEFINICAO PADRAO DE MODS COMPATIVEIS=======
+=====================GTA SAN ANDREAS=============]]--
+
+ImVehFT.asi
+DSS.cs
+Memory512.cs
+BulletHole.asi
+StreamMemFix1.0.asi
+StreamMemFix2.2_test1.asi
+StreamMemFix2.2_test2.asi
+CLEO.asi
+radarrect.asi
+gasoline.cs
+Carspawn.cs
+FixWheelTurnBack.cs
+Hooks.asi

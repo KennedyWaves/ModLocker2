@@ -1,0 +1,3244 @@
+<?xml version="1.0" encoding="iso-8859-1"?><DocumentData>
+<ProductVersion>8.3.0.0</ProductVersion>
+<ProductID>{ABF9EF9E-ECF6-4019-8A3E-908A6CFF4D1A}</ProductID>
+<IRProductName>AutoPlay Media Studio 8</IRProductName>
+<ProductType>Trial</ProductType>
+<DocInfo>
+<Title/>
+<Author>Kennedy Edson Silva de Souza</Author>
+<Company>WAVES informática</Company>
+<Copyright>Copyright © 2014</Copyright>
+<URL>http://fb.com/waves.info</URL>
+<Email>waves.brasil@live.com</Email>
+<Comments/>
+<CreatedVersion>8.1.0.0 (Professional Edition)</CreatedVersion>
+<LastSavedVersion>8.3.0.0 (Professional Edition Trial)</LastSavedVersion>
+</DocInfo>
+<ProjectInfo ToolTipStyle="0">
+<Office2007Theme Theme="5"/>
+<WindowStyles>
+<Width>110</Width>
+<Height>35</Height>
+<WindowTitle>WAVES Adm Locker</WindowTitle>
+<WindowStyle>2</WindowStyle>
+<FillColor>0</FillColor>
+</WindowStyles>
+<WindowOptions>
+<Movable>0</Movable>
+<AlwaysOnTop>0</AlwaysOnTop>
+<Resizable>0</Resizable>
+<MinWidth>1</MinWidth>
+<MinHeight>1</MinHeight>
+</WindowOptions>
+<TransparentWindow>
+<TransparentImage/>
+<FitTrans>1</FitTrans>
+</TransparentWindow>
+<Icon>
+<UseCustomIcon>1</UseCustomIcon>
+<TaskbarVisibility>0</TaskbarVisibility>
+<IconFile>AutoPlay\Icons\new_icon.ico</IconFile>
+</Icon>
+<IntroVideo>
+<AllowClickToSkip>1</AllowClickToSkip>
+<MediaWidth>630</MediaWidth>
+<MediaHeight>425</MediaHeight>
+<WindowWidth>630</WindowWidth>
+<WindowHeight>425</WindowHeight>
+<BackgroundColor>16777215</BackgroundColor>
+<MediaMode>1</MediaMode>
+<WindowMode>0</WindowMode>
+<VideoFileName/>
+<UseIntroVideo>0</UseIntroVideo>
+<VideoType>0</VideoType>
+<UseBorder>0</UseBorder>
+<TitleBar>0</TitleBar>
+<TitleBarText/>
+</IntroVideo>
+<AudioBGMusic>
+<ShuffleMode>0</ShuffleMode>
+<Repeat>1</Repeat>
+<BackVolume>255</BackVolume>
+<EffectsVolume>255</EffectsVolume>
+<Tracks/>
+</AudioBGMusic>
+<Globals>
+<Script>function Load_dados()
+	usadodir = _SourceFolder
+	arqprog = Shell.GetFolder(SHF_PROGRAMFILES);
+	sainit = INIFile.GetValue("Mod_Locker\\MOD_LOCKER.INI", "INIT", "sainit");
+	sainit = String.ToNumber(sainit);
+	sampinit = INIFile.GetValue("Mod_Locker\\MOD_LOCKER.INI", "INIT", "sampinit");
+	sampinit = String.ToNumber(sampinit);
+	mtainit = INIFile.GetValue("Mod_Locker\\MOD_LOCKER.INI", "INIT", "mtainit");
+	mtainit = String.ToNumber(mtainit);
+	gtadir = INIFile.GetValue("Mod_Locker\\MOD_LOCKER.INI", "DIR", "gtadir");
+	sampdir = INIFile.GetValue("Mod_Locker\\MOD_LOCKER.INI", "DIR", "sampdir");
+	mtadir = INIFile.GetValue("Mod_Locker\\MOD_LOCKER.INI", "DIR", "mtadir");
+	mtaexedir = INIFile.GetValue("Mod_Locker\\MOD_LOCKER.INI", "DIR", "mtaexedir");
+end
+function installmod()
+	local localmod = Application.LoadValue("Mod_Locker", "Last_Dir");
+	if(localmod == "")then
+		localmod = Shell.GetFolder(SHF_MYDOCUMENTS);
+	end
+	exportdir = Application.LoadValue("Mod_Locker", "exportdir");
+	filtro = "Plug-Ins de Script (CLEO, ASI) |*.asi;*.cs|Script ASI |*.asi |Script CLEO |*.cs|", "", "";
+	pegamod = Dialog.FileBrowse(true, "Selecionar Plug-In", localmod, filtro, "", "", true, true);
+	if(pegamod)then
+		for x,y in pairs (pegamod) do
+			if(pegamod[x] ~= "CANCEL")then
+				nomeshow = pegamod[x];
+				nomesplit = String.SplitPath(nomeshow);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;			
+				if nomesplit.Extension == ".cs" then
+					gravamod = ""..exportdir.."\\cleo\\"..nomeshow.."";
+				end
+				if nomesplit.Extension == ".asi" then
+					gravamod = ""..exportdir.."\\"..nomeshow.."";
+				end
+				File.SetPermissions(exportdir, SID_EVERYBODY, SET_ACCESS, WRITE_PERMISSIONS, INHERIT_NO_PROPAGATE);	
+				File.Copy(pegamod[x], gravamod, true, true, false, true, nil);
+				local strLastPath = nomesplit.Drive..nomesplit.Folder;
+				Application.SaveValue("Mod_Locker", "Last_Dir",strLastPath);
+			end
+		end
+	end
+end
+function removemod()
+	totaldelete = Application.LoadValue("Mod_Locker", "delete_number");
+	totaldelete = String.ToNumber(totaldelete);
+	for x=1,totaldelete do
+		deletemod = Application.LoadValue("Mod_Locker", "deletemod_"..x);
+		File.SetPermissions(""..usadodir.."\\Adm_Locker.exe", SID_EVERYBODY, SET_ACCESS, ALL_PERMISSIONS, SUB_CONTAINERS_AND_OBJECTS_INHERIT);	
+		File.Delete(deletemod, false, false, false, nil);
+	end
+end
+function saunlocker()
+	if gtadir == "" then
+		Application.Exit(0);
+	end
+	cleobak = File.Find(gtadir.."\\cleo", "*.bak", false, false, nil, nil);
+	asibak = File.Find(gtadir, "*.bak", false, false, nil, nil);
+	if (cleobak) then
+		for x,y in pairs(cleobak) do
+			splitbak = String.SplitPath(cleobak[x]);
+			nomerestorecleo = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+			File.Rename(cleobak[x], nomerestorecleo);
+		end
+	end
+	if (asibak) then
+		for x,y in pairs(asibak) do
+			splitbak = String.SplitPath(asibak[x]);
+			nomerestoreasi = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+			File.Rename(asibak[x], nomerestoreasi);
+		end
+	end
+end
+
+function mtasaunlocker()
+	if gtadir == "" then
+		Application.Exit(0);
+	end
+	cleobak = File.Find(mtadir.."\\cleo", "*.bak", false, false, nil, nil);
+	asibak = File.Find(mtadir, "*.bak", false, false, nil, nil);
+	if (cleobak) then
+		for x,y in pairs(cleobak) do
+			splitbak = String.SplitPath(cleobak[x]);
+			nomerestorecleo = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+			File.Rename(cleobak[x], nomerestorecleo);
+		end
+	end
+	if (asibak) then
+		for x,y in pairs(asibak) do
+			splitbak = String.SplitPath(asibak[x]);
+			nomerestoreasi = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+			File.Rename(asibak[x], nomerestoreasi);
+		end
+	end
+end
+
+function sampunlocker()
+	if samp == "" then
+		Application.Exit(0);
+	end
+	cleobak = File.Find(sampdir.."\\cleo", "*.bak", false, false, nil, nil);
+	asibak = File.Find(sampdir, "*.bak", false, false, nil, nil);
+	if (cleobak) then
+		for x,y in pairs(cleobak) do
+			splitbak = String.SplitPath(cleobak[x]);
+			nomerestorecleo = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+			File.Rename(cleobak[x], nomerestorecleo);
+		end
+	end
+	if (asibak) then
+		for x,y in pairs(asibak) do
+			splitbak = String.SplitPath(asibak[x]);
+			nomerestoreasi = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+			File.Rename(asibak[x], nomerestoreasi);
+		end
+	end
+end
+
+	
+function vcunlocker()
+end
+
+function mtavcunlocker()
+end
+
+function vcmpunlocker()
+end
+
+function MTASA_Locker()
+	defcompatpad = TextFile.ReadToString("Mod_Locker\\MTASA_padcom.db");
+	defcompatuser = TextFile.ReadToString("Mod_Locker\\MTASA_listcom.db");
+	defincompatuser = TextFile.ReadToString("Mod_Locker\\MTASA_listincom.db");
+	enablemantido = false;
+	execaouser = "";
+	desativasempreuser = "";
+	simao = "nao";
+	manter = "nao";
+	cleobak = false;
+	asibak = false;
+	cleo = false;
+	asi = false;
+--[[	if mtasaenb == 02 then
+		findenbbak = File.Find(gtadir, "d3d9.dll.bak", false, false, nil, nil);
+		if (findenbbak) then
+			File.Rename(""..mtasadir.."\\d3d9.dll.bak", ""..gtadir.."\\d3d9.dll");
+		end
+	end
+	mtasaenb = 01;
+	if mtasaenb == 01 then
+		findenb = File.Find(gtadir, "d3d9.dll", false, false, nil, nil);
+		if (findenb) then
+			File.Rename(""..gtadir.."\\d3d9.dll", ""..gtadir.."\\d3d9.dll.bak");
+		end
+	end]]--
+	--desativar todos
+	if mtainit == 1 then
+		--operacao cleo
+		cleo = File.Find(mtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				File.Rename(cleo[x], cleo[x]..".bak");
+			end
+		end
+		--operacao asi
+		asi = File.Find(mtadir, "*.asi", false, false, nil, nil);
+		if (asi) then
+			for x,y in pairs(asi) do
+				File.Rename(asi[x], asi[x]..".bak");
+			end
+		end
+	end
+	
+	--ativar todos os mods
+	if mtainit == 2 then
+		enablemantido = false;
+		cleobak = File.Find(mtadir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(mtadir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				splitbak = String.SplitPath(cleobak[x]);
+				nomerestorecleo = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+				File.Rename(cleobak[x], nomerestorecleo);
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+			splitbak = String.SplitPath(asibak[x]);
+			nomerestoreasi = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+				File.Rename(asibak[x], nomerestoreasi);
+			end
+		end
+	end
+	--perguntar sobre fora de lista
+	if mtainit == 3 then
+		enablemantido = true;
+		defcompatpad = TextFile.ReadToString("Mod_Locker\\MTASA_padcom.db");
+		defcompatuser = TextFile.ReadToString("Mod_Locker\\MTASA_listcom.db");
+		defincompatuser = TextFile.ReadToString("Mod_Locker\\MTASA_listincom.db");
+		cleo = File.Find(mtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				File.Rename(cleo[x], cleo[x]..".bak");
+			end
+		end
+		asi = File.Find(mtadir, "*.asi", false, false, nil, nil);
+		if (asi) then
+			for x,y in pairs(asi) do
+				File.Rename(asi[x], asi[x]..".bak");
+			end
+		end
+		cleobak = File.Find(mtadir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(mtadir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				splitbak = String.SplitPath(cleobak[x]);
+				nomerestorecleo = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+				nomecleo = splitbak.Filename;
+				reativa = String.Find(defincompatuser, nomecleo, 1, false);
+				if reativa == -1 then
+					File.Rename(cleobak[x], nomerestorecleo);
+				end
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				splitbak = String.SplitPath(asibak[x]);
+				nomerestoreasi = splitbak.Drive..splitbak.Folder..splitbak.Filename;
+				nomeasi = splitbak.Filename;
+				reativa = String.Find(defincompatuser, nomeasi, 1, false);
+				if reativa == -1 then
+					File.Rename(asibak[x], nomerestoreasi);
+				end
+			end
+		end
+		--operacao cleo
+		cleo = File.Find(mtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		asi = File.Find(mtadir, "*.asi", false, false, nil, nil);
+		if (cleo) then
+			totalcleo = Table.Count(cleo);
+			for x,y in pairs (cleo) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = cleo[x];
+				nomesplit = String.SplitPath(nomeshow);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				findcompad = String.Find(defcompatpad, nomeshow, 1, false);
+				findcomuser = String.Find(defcompatuser, nomeshow, 1, false);
+				if findcompad == -1 and findcomuser == -1 then
+					texto = "Deseja desativar o Plug-in "..nomeshow.."?"
+					DialogEx.Show("yesno", true, nil, nil);
+					if simao == "sim" then
+						File.Rename(cleo[x], ""..cleo[x]..".bak");
+						if manter == "sim" then
+							loaduserdmc = TextFile.ReadToString("Mod_Locker\\MTASA_listincom.db");
+							addcleoconcat = String.Concat(loaduserdmc, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\MTASA_listincom.db", addcleoconcat, false);
+						end
+					else
+						if manter == "sim" then
+							loaduserdmi = TextFile.ReadToString("Mod_Locker\\MTASA_listcom.db");
+							addcleoconcat = String.Concat(loaduserdmi, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\MTASA_listcom.db", addcleoconcat, false);
+						end
+					end
+				end
+			end
+		end
+		--operacao asi
+			if (asi) then
+			for x,y in pairs(asi) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = asi[x];
+				nomesplit = String.SplitPath(nomeshow);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				findcompad = String.Find(defcompatpad, nomeshow, 1, false);
+				findcomuser = String.Find(defcompatuser, nomeshow, 1, false);
+				if findcompad == -1 and findcomuser == -1 then
+					texto = "Deseja desativar o Plug-in "..nomeshow.."?"
+					DialogEx.Show("yesno", true, nil, nil);
+					if simao == "sim" then
+						File.Rename(asi[x], ""..asi[x]..".bak");
+						if manter == "sim" then
+							loaduserdmc = TextFile.ReadToString("Mod_Locker\\MTASA_listincom.db");
+							addasiconcat = String.Concat(loaduserdmc, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\MTASA_listincom.db", addasiconcat, false);
+						end
+					else
+						if manter == "sim" then
+							loaduserdmi = TextFile.ReadToString("Mod_Locker\\MTASA_listcom.db");
+							addasiconcat = String.Concat(loaduserdmi, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\MTASA_listcom.db", addasiconcat, false);
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	--perguntar todos os mods
+	if mtainit == 04 then
+		--restaurar todos os mods
+		enablemantido = false;
+		cleobak = File.Find(""..mtadir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(mtadir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				nomesplit = String.SplitPath(nomeshow[x]);
+				nomerestorecleo = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(cleobak[x], nomerestorecleo);
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				nomerestoreasi = String.Left(asibak[x], (String.Length(asibak[x]) - 4));
+				File.Rename(asibak[x], nomerestoreasi);
+			end
+		end
+		--operacao cleo
+		cleo = File.Find(""..mtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		asi = File.Find(mtadir, "*.asi", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = cleo[x];
+				nomesplit = String.SplitPath(nomeshow[x]);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				texto = "Deseja desativar o Plug-in "..nomeshow.."?"
+				DialogEx.Show("yesno", true, nil, nil);
+				if simao == "sim" then
+					File.Rename(cleo[x], ""..cleo[x]..".bak");
+				end
+			end
+		end
+		--operacao asi
+		if (asi) then
+			for x,y in pairs(asi) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = asi[x];
+				nomesplit = String.SplitPath(nomeshow[x]);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				texto = "Deseja desativar o Plug-in "..nomeshow.."?"
+				DialogEx.Show("yesno", true, nil, nil);
+				if simao == "sim" then
+					File.Rename(asi[x], ""..asi[x]..".bak");
+				end
+			end
+		end
+	end
+end
+
+
+function SAMP_Locker()
+	enablemantido = false;
+	execaouser = "";
+	desativasempreuser = "";
+	simao = "nao";
+	manter = "nao";
+	cleobak = false;
+	asibak = false;
+	cleo = false;
+	asi = false;
+--[[	if sampenb == 02 then
+		findenbbak = File.Find(gtadir, "d3d9.dll.bak", false, false, nil, nil);
+		if (findenbbak) then
+			File.Rename(""..gtadir.."\\d3d9.dll.bak", ""..gtadir.."\\d3d9.dll");
+		end
+	end
+	sampenb = 01;
+	if sampenb == 01 then
+		findenb = File.Find(gtadir, "d3d9.dll", false, false, nil, nil);
+		if (findenb) then
+			File.Rename(""..gtadir.."\\d3d9.dll", ""..gtadir.."\\d3d9.dll.bak");
+		end
+	end]]--
+	--desativar todos
+	--desativar todos
+	if sampinit == 01 then
+		--operacao cleo
+		cleo = File.Find(""..gtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				File.Rename(cleo[x], ""..cleo[x]..".bak");
+			end
+		end
+		--operacao asi
+		asi = File.Find(gtadir, "*.asi", false, false, nil, nil);
+		if (asi) then
+			for x,y in pairs(asi) do
+				File.Rename(asi[x], ""..asi[x]..".bak");
+			end
+		end
+	end
+	
+	--ativar todos os mods
+	if sampinit == 2 then
+		enablemantido = false;
+		cleobak = File.Find(""..sampdir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(sampdir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				nomesplit = String.SplitPath(cleobak[x]);
+				nomerestorecleo = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(cleobak[x], nomerestorecleo);
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				nomesplit = String.SplitPath(asibak[x]);
+				nomerestoreasi = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(asibak[x], nomerestoreasi);
+			end
+		end
+	end
+	--perguntar sobre fora de lista
+	if sampinit == 3 then
+		enablemantido = true;
+		defcompatpad = TextFile.ReadToString("Mod_Locker\\SAMP_padcom.db");
+		defcompatuser = TextFile.ReadToString("Mod_Locker\\SAMP_listcom.db");
+		defincompatuser = TextFile.ReadToString("Mod_Locker\\SAMP_listincom.db");
+		cleo = File.Find(""..sampdir.."\\cleo", "*.cs", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				File.Rename(cleo[x], ""..cleo[x]..".bak");
+			end
+		end
+		asi = File.Find(sampdir, "*.asi", false, false, nil, nil);
+		if (asi) then
+			for x,y in pairs(asi) do
+				File.Rename(asi[x], ""..asi[x]..".bak");
+			end
+		end
+		cleobak = File.Find(""..sampdir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(sampdir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				nomesplit = String.SplitPath(cleobak[x]);
+				nomerestorecleo = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				nomecleo = nomesplit.Filename;
+				reativa = String.Find(defincompatuser, nomecleo, 1, false);
+				if reativa == -1 then
+					File.Rename(cleobak[x], nomerestorecleo);
+				end
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				nomesplit = String.SplitPath(asibak[x]);
+				nomerestoreasi = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				nomeasi = nomesplit.Filename;
+				reativa = String.Find(defincompatuser, nomeasi, 1, false);
+				if reativa == -1 then
+					File.Rename(asibak[x], nomerestoreasi);
+				end
+			end
+		end
+		--operacao cleo
+		cleo = File.Find(""..sampdir.."\\cleo", "*.cs", false, false, nil, nil);
+		asi = File.Find(sampdir, "*.asi", false, false, nil, nil);
+		if (cleo) then
+			totalcleo = Table.Count(cleo);
+			for x = 1,totalcleo do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = cleo[x];
+				nomesplit = String.SplitPath(cleo[x]);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				findcompad = String.Find(defcompatpad, nomeshow, 1, false);
+				findcomuser = String.Find(defcompatuser, nomeshow, 1, false);
+				if findcompad == -1 and findcomuser == -1 then
+					texto = "Deseja desativar o Plugin "..nomeshow.."?"
+					DialogEx.Show("yesno", true, nil, nil);
+					if simao == "sim" then
+						File.Rename(cleo[x], ""..cleo[x]..".bak");
+						if manter == "sim" then
+							loaduserdmc = TextFile.ReadToString("Mod_Locker\\SAMP_listincom.db");
+							addcleoconcat = String.Concat(loaduserdmc, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SAMP_listincom.db", addcleoconcat, false);
+						end
+					else
+						if manter == "sim" then
+							loaduserdmi = TextFile.ReadToString("Mod_Locker\\SAMP_listcom.db");
+							addcleoconcat = String.Concat(loaduserdmi, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SAMP_listcom.db", addcleoconcat, false);
+						end
+					end
+				end
+			end
+		end
+		--operacao asi
+			if (asi) then
+			for x,y in pairs(asi) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = asi[x];
+				nomesplit = String.SplitPath(asi[x]);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				findcompad = String.Find(defcompatpad, nomeshow, 1, false);
+				findcomuser = String.Find(defcompatuser, nomeshow, 1, false);
+				if findcompad == -1 and findcomuser == -1 then
+					texto = "Deseja desativar o Plug-In "..nomeshow.."?"
+					DialogEx.Show("yesno", true, nil, nil);
+					if simao == "sim" then
+						File.Rename(asi[x], ""..asi[x]..".bak");
+						if manter == "sim" then
+							loaduserdmc = TextFile.ReadToString("Mod_Locker\\SAMP_listincom.db");
+							addasiconcat = String.Concat(loaduserdmc, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SAMP_listincom.db", addasiconcat, false);
+						end
+					else
+						if manter == "sim" then
+							loaduserdmi = TextFile.ReadToString("Mod_Locker\\SAMP_listcom.db");
+							addasiconcat = String.Concat(loaduserdmi, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SAMP_listcom.db", addasiconcat, false);
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	--perguntar todos os mods
+	if sampinit == 4 then
+		--restaurar todos os mods
+		enablemantido = false;
+		cleobak = File.Find(""..sampdir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(sampdir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				nomesplit = String.SplitPath(cleobak[x]);
+				nomerestorecleo = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(cleobak[x], nomerestorecleo);
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				nomesplit = String.SplitPath(asibak[x]);
+				nomerestoreasi = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(asibak[x], nomerestoreasi);
+			end
+		end
+		--operacao cleo
+		cleo = File.Find(""..sampdir.."\\cleo", "*.cs", false, false, nil, nil);
+		asi = File.Find(sampdir, "*.asi", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = cleo[x];
+				nomesplit = String.SplitPath(cleo[x]);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				texto = "Deseja desativar o Plugin "..nomeshow.."?"
+				DialogEx.Show("yesno", true, nil, nil);
+				if simao == "sim" then
+					File.Rename(cleo[x], ""..cleo[x]..".bak");
+				end
+			end
+		end
+		--operacao asi
+		if (asi) then
+			for x,y in pairs(asi) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = asi[x];
+				nomesplit = String.SplitPath(asi[x]);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				texto = "Deseja desativar o Plugin "..nomeshow.."?"
+				DialogEx.Show("yesno", true, nil, nil);
+				if simao == "sim" then
+					File.Rename(asi[x], ""..asi[x]..".bak");
+				end
+			end
+		end
+	end
+end
+
+function VCMP_Locker()
+end
+
+function SA_Locker()
+	defcompatpad = TextFile.ReadToString("Mod_Locker\\SA_padcom.db");
+	defcompatuser = TextFile.ReadToString("Mod_Locker\\SA_listcom.db");
+	defincompatuser = TextFile.ReadToString("Mod_Locker\\SA_listincom.db");
+	enablemantido = false;
+	execaouser = "";
+	desativasempreuser = "";
+	simao = "nao";
+	manter = "nao";
+--[[	if sampenb == 02 then
+		findenbbak = File.Find(gtadir, "d3d9.dll.bak", false, false, nil, nil);
+		if (findenbbak) then
+			File.Rename(""..gtadir.."\\d3d9.dll.bak", ""..gtadir.."\\d3d9.dll");
+		end
+	end
+	sampenb = 01;
+	if sampenb == 01 then
+		findenb = File.Find(gtadir, "d3d9.dll", false, false, nil, nil);
+		if (findenb) then
+			File.Rename(""..gtadir.."\\d3d9.dll", ""..gtadir.."\\d3d9.dll.bak");
+		end
+	end]]--
+	--desativar todos
+	if sainit == 1 then
+		--operacao cleo
+		cleo = File.Find(gtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				File.Rename(cleo[x], ""..cleo[x]..".bak");
+			end
+		end
+		--operacao asi
+		asi = File.Find(gtadir, "*.asi", false, false, nil, nil);
+		if (asi) then
+			for x,y in pairs(asi) do
+				File.Rename(asi[x], ""..asi[x]..".bak");
+			end
+		end
+	end
+	
+	--ativar todos os mods
+	if sainit == 2 then
+		enablemantido = false;
+		cleobak = File.Find(gtadir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(gtadir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				nomesplit = String.SplitPath(cleobak[x]);
+				nomerestorecleo = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(cleobak[x], nomerestorecleo);
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				nomesplit = String.SplitPath(asibak[x]);
+				nomerestoreasi = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(asibak[x], nomerestoreasi);
+			end
+		end
+	end
+	
+	--perguntar sobre fora de lista
+	if sainit == 3 then
+		enablemantido = true;
+		defcompatpad = TextFile.ReadToString("Mod_Locker\\SA_padcom.db");
+		defcompatuser = TextFile.ReadToString("Mod_Locker\\SA_listcom.db");
+		defincompatuser = TextFile.ReadToString("Mod_Locker\\SA_listincom.db");
+		cleo = File.Find(gtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				File.Rename(cleo[x], cleo[x]..".bak");
+			end
+		end
+		asi = File.Find(gtadir, "*.asi", false, false, nil, nil);
+		if (asi) then
+			for x,y in pairs(asi) do
+				File.Rename(asi[x], asi[x]..".bak");
+			end
+		end
+		--restaurar plug-ins
+		cleobak = File.Find(gtadir.."\\cleo", "*.bak", false, false, nil, nil);
+		asibak = File.Find(gtadir, "*.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				nomesplit = String.SplitPath(cleobak[x]);
+				nomerestorecleo = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				nomecleo = nomesplit.Filename;
+				reativa = String.Find(defincompatuser, nomecleo, 1, false);
+				if reativa == -1 then
+					File.Rename(cleobak[x], nomerestorecleo);
+				end
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				nomesplit = String.SplitPath(asibak[x]);
+				nomerestoreasi = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				nomeasi = nomesplit.Filename;
+				reativa = String.Find(defincompatuser, nomeasi, 1, false);
+				if reativa == -1 then
+					File.Rename(asibak[x], nomerestoreasi);
+				end
+			end
+		end
+		--operacao cleo
+		cleo = File.Find(gtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		asi = File.Find(gtadir, "*.asi", false, false, nil, nil);
+		if (cleo) then
+			totalcleo = Table.Count(cleo);
+			for x = 1,totalcleo do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = cleo[x];
+				nomesplit = String.SplitPath(nomeshow);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				findcompad = String.Find(defcompatpad, nomeshow, 1, false);
+				findcomuser = String.Find(defcompatuser, nomeshow, 1, false);
+				if findcompad == -1 and findcomuser == -1 then
+					texto = "Deseja ativar o Plug-in "..nomeshow.."?"
+					DialogEx.Show("yesno", true, nil, nil);
+					if simao == "nao" then
+						File.Rename(cleo[x], ""..cleo[x]..".bak");
+						if manter == "sim" then
+							loaduserdmc = TextFile.ReadToString("Mod_Locker\\SA_listincom.db");
+							addcleoconcat = String.Concat(loaduserdmc, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SA_listincom.db", addcleoconcat, false);
+						end
+					else
+						if manter == "sim" then
+							loaduserdmi = TextFile.ReadToString("Mod_Locker\\SA_listcom.db");
+							addcleoconcat = String.Concat(loaduserdmi, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SA_listcom.db", addcleoconcat, false);
+						end
+					end
+				end
+			end
+		end
+		--operacao asi
+			if (asi) then
+			for x,y in pairs(asi) do
+				if resp_msg == 1 then
+					Application.Exit(0);
+				end
+				nomeshow = asi[x];
+				nomesplit = String.SplitPath(nomeshow);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				findcompad = String.Find(defcompatpad, nomeshow, 1, false);
+				findcomuser = String.Find(defcompatuser, nomeshow, 1, false);
+				if findcompad == -1 and findcomuser == -1 then
+					texto = "Deseja ativar o Plug-in "..nomeshow.."?"
+					DialogEx.Show("yesno", true, nil, nil);
+					if simao == "nao" then
+						File.Rename(asi[x], ""..asi[x]..".bak");
+						if manter == "sim" then
+							loaduserdmc = TextFile.ReadToString("Mod_Locker\\SA_listincom.db");
+							addasiconcat = String.Concat(loaduserdmc, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SA_listincom.db", addasiconcat, false);
+						end
+					else
+						if manter == "sim" then
+							loaduserdmi = TextFile.ReadToString("Mod_Locker\\SA_listcom.db");
+							addasiconcat = String.Concat(loaduserdmi, "\r\n"..nomeshow.."");
+							TextFile.WriteFromString("Mod_Locker\\SA_listcom.db", addasiconcat, false);
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	--perguntar todos os mods
+	if sainit == 4 then
+		--restaurar todos os mods
+		enablemantido = false;
+		cleobak = File.Find(gtadir.."\\cleo", "*.cs.bak", false, false, nil, nil);
+		asibak = File.Find(gtadir, "*.asi.bak", false, false, nil, nil);
+		if (cleobak) then
+			for x,y in pairs(cleobak) do
+				nomesplit = String.SplitPath(cleobak[x]);
+				nomerestorecleo = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(cleobak[x], nomerestorecleo);
+			end
+		end
+		if (asibak) then
+			for x,y in pairs(asibak) do
+				nomesplit = String.SplitPath(asibak[x]);
+				nomerestoreasi = nomesplit.Drive..nomesplit.Folder..nomesplit.Filename;
+				File.Rename(asibak[x], nomerestoreasi);
+			end
+		end
+		--operacao cleo
+		cleo = File.Find(gtadir.."\\cleo", "*.cs", false, false, nil, nil);
+		asi = File.Find(gtadir, "*.asi", false, false, nil, nil);
+		if (cleo) then
+			for x,y in pairs(cleo) do
+				nomeshow = cleo[x];
+				nomesplit = String.SplitPath(nomeshow);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				texto = "Deseja ativar o Plug-in "..nomeshow.."?"
+				DialogEx.Show("yesno", true, nil, nil);
+				if simao == "nao" then
+					File.Rename(cleo[x], ""..cleo[x]..".bak");
+				end
+			end
+		end
+		--operacao asi
+		if (asi) then
+			for x,y in pairs(asi) do
+				nomeshow = asi[x];
+				nomesplit = String.SplitPath(nomeshow);
+				nomeshow = nomesplit.Filename..nomesplit.Extension;
+				texto = "Deseja ativar o Plug-in "..nomeshow.."?"
+				DialogEx.Show("yesno", true, nil, nil);
+				if simao == "nao" then
+					File.Rename(asi[x], ""..asi[x]..".bak");
+				end
+			end
+		end
+	end
+	TextFile.WriteFromString(""..gtadir.."\\run_gtasa.cmd", "start gta_sa.exe", false);
+end
+
+function VC_Locker()
+end</Script>
+<BookMarks count="0">
+</BookMarks>
+<DesignCodeLine>234</DesignCodeLine>
+<DesignCodeCol>19</DesignCodeCol>
+</Globals>
+<Defaults>
+<StartupPage>_PageFirst</StartupPage>
+<MouseOverSoundDefault/>
+<MouseClickSoundDefault/>
+<MemMngMethod>0</MemMngMethod>
+<UserPrivilegeLevel>2</UserPrivilegeLevel>
+</Defaults>
+<TargetMedia>
+<TargetMediaSize>4</TargetMediaSize>
+<CustomSize>0</CustomSize>
+</TargetMedia>
+<Group>
+<CurrentGrounp>0</CurrentGrounp>
+</Group>
+<ActionPlugins/>
+<TemplateInfo>
+<Name/>
+<Author>Kennedy Edson Silva de Souza</Author>
+<Contact>waves.brasil@live.com</Contact>
+<Web>http://fb.com/waves.info</Web>
+<Copyright>Copyright © 2014</Copyright>
+<Desc/>
+<Categories>General</Categories>
+<Picture/>
+</TemplateInfo>
+<ReadOrder>
+<RTLReadOrder>0</RTLReadOrder>
+</ReadOrder>
+<CodeSigning>
+<CodeSignLocation/>
+<CodeSignCertificateFile/>
+<CodeSignPVKFile/>
+<CodeSignTimeStampURL/>
+<CodeSignDescription/>
+<CodeSignDescriptionURL/>
+<CodeSignApps>0</CodeSignApps>
+<CodeSigningTool>0</CodeSigningTool>
+<Arguments/>
+</CodeSigning>
+<RuntimeSkin>
+<UseSkinFile>0</UseSkinFile>
+<SkinFilename/>
+<SkinSubStyle/>
+</RuntimeSkin>
+<Databases>
+<MySQL>0</MySQL>
+<SQLite3>0</SQLite3>
+<Oracle>0</Oracle>
+<ODBC>0</ODBC>
+<PostgreSQL>0</PostgreSQL>
+</Databases>
+<Event>
+<Name>On Startup</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Shutdown</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>2097253</DesignCodeLine>
+<DesignCodeCol>7274563</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Size</Name>
+<Args>number e_WindowWidth, number e_WindowHeight, number e_PageWidth, number e_PageHeight, number e_Type</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>7274612</DesignCodeLine>
+<DesignCodeCol>7077968</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Menu</Name>
+<Args>number e_ID, table e_ItemInfo</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>3014712</DesignCodeLine>
+<DesignCodeCol>3014705</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<EXEResourceInfo>
+<ReplaceIcon>1</ReplaceIcon>
+<IconFilename>Mod_Locker\icones\WAVES_METRO.ico</IconFilename>
+<ReplaceVersionInfo>1</ReplaceVersionInfo>
+<FileVer1>1</FileVer1>
+<FileVer2>0</FileVer2>
+<FileVer3>0</FileVer3>
+<FileVer4>0</FileVer4>
+<ProductVer1>3</ProductVer1>
+<ProductVer2>0</ProductVer2>
+<ProductVer3>0</ProductVer3>
+<ProductVer4>0</ProductVer4>
+<Comments>Created with AutoPlay Media Studio</Comments>
+<Company>WAVES informática</Company>
+<FileDescription>WAVES Adm Locker</FileDescription>
+<LegalCopyright>Copyright © 2014 WAVES informática</LegalCopyright>
+<LegalTrademarks>WAVES informática is a Trademark of Waves Corporation</LegalTrademarks>
+<PrivateBuild/>
+<ProductName>WAVES Adm Locker</ProductName>
+<SpecialBuild/>
+</EXEResourceInfo>
+<HGuidelines/>
+<VGuidelines/>
+<MenuBar>
+<Enabled>0</Enabled>
+<UseIcons>0</UseIcons>
+<BitmapIconFile/>
+<TransColor format="hex">ffffff</TransColor>
+<MenuItem>
+<Text>Main Menu &amp;1</Text>
+<ID>100</ID>
+<Enabled>1</Enabled>
+<Checked>0</Checked>
+<SubMenu>
+<MenuItem>
+<Text>Sub Menu &amp;1</Text>
+<ID>101</ID>
+<Enabled>1</Enabled>
+<Checked>0</Checked>
+<SubMenu/>
+<IconID>-1</IconID>
+</MenuItem>
+<MenuItem>
+<Text>Sub Menu &amp;2</Text>
+<ID>102</ID>
+<Enabled>1</Enabled>
+<Checked>0</Checked>
+<SubMenu/>
+<IconID>-1</IconID>
+</MenuItem>
+</SubMenu>
+<IconID>-1</IconID>
+</MenuItem>
+<MenuItem>
+<Text>Main Menu &amp;2</Text>
+<ID>200</ID>
+<Enabled>1</Enabled>
+<Checked>0</Checked>
+<SubMenu>
+<MenuItem>
+<Text>Sub Menu &amp;1</Text>
+<ID>201</ID>
+<Enabled>1</Enabled>
+<Checked>0</Checked>
+<SubMenu/>
+<IconID>-1</IconID>
+</MenuItem>
+<MenuItem>
+<Text>Sub Menu &amp;2</Text>
+<ID>202</ID>
+<Enabled>1</Enabled>
+<Checked>0</Checked>
+<SubMenu/>
+<IconID>-1</IconID>
+</MenuItem>
+</SubMenu>
+<IconID>-1</IconID>
+</MenuItem>
+</MenuBar>
+</ProjectInfo>
+<Page>
+<Name>Locker</Name>
+<InheritObs/>
+<InheritBG/>
+<Description/>
+<Keywords/>
+<Background>
+<Type>0</Type>
+<ImageStyle>1</ImageStyle>
+<TopColor>16711680</TopColor>
+<BottomColor>-16777216</BottomColor>
+<UseCustomBackgroundSettings>1</UseCustomBackgroundSettings>
+<TransitionEffect/>
+<TransProps/>
+<NormalImage>
+<Filename>AutoPlay\Images\splash.png</Filename>
+</NormalImage>
+</Background>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Show</Name>
+<Args/>
+<Script>Load_dados();
+for i, Arg in pairs (_CommandLineArgs) do
+	if (String.CompareNoCase(Arg, "/installmod") == 0) then
+		installmod();
+	end
+	if (String.CompareNoCase(Arg, "/removemod") == 0) then
+		removemod();
+	end
+	if (String.CompareNoCase(Arg, "/saunlock") == 0) then
+		saunlocker();
+	end
+	if (String.CompareNoCase(Arg, "/sampunlock") == 0) then
+		sampunlocker();
+	end
+	if (String.CompareNoCase(Arg, "/mtasaunlock") == 0) then
+		mtasaunlocker();
+	end
+	if (String.CompareNoCase(Arg, "/vcunlock") == 0) then
+		vcunlocker();
+	end
+	if (String.CompareNoCase(Arg, "/vcmpunlock") == 0) then
+		vcmpunlocker();
+	end
+	if (String.CompareNoCase(Arg, "/mtavcunlock") == 0) then
+		mtavcunlocker();
+	end
+	if (String.CompareNoCase(Arg, "/samp") == 0) then
+		SAMP_Locker();
+	end
+	if (String.CompareNoCase(Arg, "/vcmp") == 0) then
+		SAMP_Locker();
+	end
+	if (String.CompareNoCase(Arg, "/sa") == 0) then
+		SA_Locker();
+	end
+	if (String.CompareNoCase(Arg, "/vc") == 0) then
+		SA_Locker();
+	end
+	if (String.CompareNoCase(Arg, "/mtasa") == 0) then
+		MTASA_Locker();
+	end
+	if (String.CompareNoCase(Arg, "/mtavc") == 0) then
+		MTAVC_Locker();
+	end
+end
+Application.Exit(0);</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>41</DesignCodeLine>
+<DesignCodeCol>51</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Close</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Timer</Name>
+<Args>number e_ID</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Audio</Name>
+<Args>number e_Channel, string e_State</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Size</Name>
+<Args>number e_WindowWidth, number e_WindowHeight, number e_PageWidth, number e_PageHeight, number e_Type</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Menu</Name>
+<Args>number e_ID, table e_ItemInfo</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Key</Name>
+<Args>number e_Key, table e_Modifiers</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Button</Name>
+<Args>number e_Type, number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Move</Name>
+<Args>number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Wheel</Name>
+<Args>table e_Flags, number e_Delta, number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Object>
+<Type>1</Type>
+<Name>lbl_msg</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>1</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>8</Top>
+<Bottom>32</Bottom>
+<Left>6</Left>
+<Right>103</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>1138</DesignCodeLine>
+<DesignCodeCol>1138</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>1769238639</DesignCodeLine>
+<DesignCodeCol>7564911</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>658750</DesignCodeLine>
+<DesignCodeCol>1080356864</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>1106</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<Text>
+<Body>Aguarde...</Body>
+<NormalColor>15184718</NormalColor>
+<HighlightColor>15184718</HighlightColor>
+<MouseDownColor>15184718</MouseDownColor>
+<DisabledColor>12632256</DisabledColor>
+<FontData>
+<FontName>Adventure Subtitles</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-19</Height>
+<Weight>500</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<Alignment>0</Alignment>
+<Orientation>0</Orientation>
+<AutoSize>1</AutoSize>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+<OriginalRect>
+<Top>8</Top>
+<Bottom>32</Bottom>
+<Left>6</Left>
+<Right>103</Right>
+</OriginalRect>
+</Text>
+</Object>
+<HGuidelines/>
+<VGuidelines/>
+</Page>
+<SugDialogs>
+<PageDialog width="320" height="185" dialog_title="SA Launcher" dialog_style="2" movable="1" use_custom_icon="0" custom_icon="" always_on_top="0" resizable="0" min_width="320" min_height="90" fit_custom_mask_to_window="1" custom_mask="">
+<Page>
+<Name>any_msg</Name>
+<InheritObs/>
+<InheritBG/>
+<Description/>
+<Keywords/>
+<Background>
+<Type>2</Type>
+<ImageStyle>2</ImageStyle>
+<TopColor>16711680</TopColor>
+<BottomColor>-16777216</BottomColor>
+<UseCustomBackgroundSettings>1</UseCustomBackgroundSettings>
+<TransitionEffect/>
+<TransProps/>
+<NormalImage>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_dialogbar.wsi</Filename>
+</NormalImage>
+</Background>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>img_table = {"Mod_Locker\\imagens\\WAVES_Metro\\WAVES_METRO.png","Mod_Locker\\imagens\\WAVES_Metro\\WAVES_METRO_atention.png","Mod_Locker\\imagens\\WAVES_Metro\\WAVES_METRO_intrrog.png","Mod_Locker\\imagens\\WAVES_Metro\\WAVES_METRO_x.png"};</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>241</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Show</Name>
+<Args/>
+<Script>resp_msg = 2;
+--waves = 1
+--atention = 2
+--question = 3
+--stop = 4
+Image.Load("img_msg", img_table[img_msg]);
+Paragraph.SetText("txt_msg", txt_msg);
+if enablecmd1 then
+	Button.SetEnabled("cmd_1", true);
+end
+if enablecmd2 then
+	Button.SetEnabled("cmd_2", true);
+end
+Button.SetText("cmd_1", one_cmdtext);
+Button.SetText("cmd_2", two_cmdtext);
+</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>13</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Close</Name>
+<Args/>
+<Script>img_msg = 1;
+Image.Load("img_msg", img_table[img_msg]);
+txt_msg = "";
+enablecmd1 = false;
+enablecmd2 = false;
+one_cmdtext = "";
+two_cmdtext = "";
+
+</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>6</DesignCodeLine>
+<DesignCodeCol>17</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Timer</Name>
+<Args>number e_ID</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Audio</Name>
+<Args>number e_Channel, string e_State</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Key</Name>
+<Args>number e_Key, table e_Modifiers</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Button</Name>
+<Args>number e_Type, number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Move</Name>
+<Args>number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Wheel</Name>
+<Args>table e_Flags, number e_Delta, number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Size</Name>
+<Args>number e_WindowWidth, number e_WindowHeight, number e_DialogWidth, number e_DialogHeight, number e_Type</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Object>
+<Type>2</Type>
+<Name>txt_msg</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>44</Top>
+<Bottom>139</Bottom>
+<Left>77</Left>
+<Right>314</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>7040620</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>27502</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<Text>
+<Body/>
+<NormalColor>16777215</NormalColor>
+<HighlightColor>16777215</HighlightColor>
+<MouseDownColor>16777215</MouseDownColor>
+<DisabledColor>12632256</DisabledColor>
+<BorderColor>0</BorderColor>
+<BackColor>16777215</BackColor>
+<FontData>
+<FontName>Segoe UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<Alignment>0</Alignment>
+<TransBG>1</TransBG>
+<VSMode>0</VSMode>
+<HSMode>2</HSMode>
+<SBStyle>1</SBStyle>
+<SBSkin>Windows7</SBSkin>
+<Border>0</Border>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</Text>
+</Object>
+<Object>
+<Type>0</Type>
+<Name>cmd_jogaagora</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>0</Top>
+<Bottom>30</Bottom>
+<Left>290</Left>
+<Right>320</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script>DialogEx.Close(0);</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>18</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<BUTTON>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_button2_30x30.btn</Filename>
+<Style>0</Style>
+<State>0</State>
+<Caption>x</Caption>
+<Align>1</Align>
+<UpColor>16777215</UpColor>
+<HighlightColor>16777215</HighlightColor>
+<DownColor>16777215</DownColor>
+<DisabledColor>16777215</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<CapXOff>0</CapXOff>
+<CapYOff>-2</CapYOff>
+<LeftMargin>0</LeftMargin>
+<RightMargin>0</RightMargin>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</BUTTON>
+</Object>
+<Object>
+<Type>3</Type>
+<Name>img_msg</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>1</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>44</Top>
+<Bottom>105</Bottom>
+<Left>11</Left>
+<Right>72</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>2573</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>4089197</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>1077985280</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<NormalImage>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_icon_waves.png</Filename>
+<UseTransColor>0</UseTransColor>
+<TransClr>16777215</TransClr>
+<TransTolerance>10</TransTolerance>
+<Opacity>100</Opacity>
+<HTMode>0</HTMode>
+</NormalImage>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</Object>
+<Object>
+<Type>0</Type>
+<Name>cmd_2</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>0</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>144</Top>
+<Bottom>174</Bottom>
+<Left>160</Left>
+<Right>309</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script>resp_msg = 2;
+DialogEx.Close(0);
+</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>1</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<BUTTON>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_button_172x30.btn</Filename>
+<Style>0</Style>
+<State>0</State>
+<Caption/>
+<Align>1</Align>
+<UpColor>16777215</UpColor>
+<HighlightColor>16777215</HighlightColor>
+<DownColor>16777215</DownColor>
+<DisabledColor>16777215</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<CapXOff>0</CapXOff>
+<CapYOff>-2</CapYOff>
+<LeftMargin>0</LeftMargin>
+<RightMargin>0</RightMargin>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</BUTTON>
+</Object>
+<Object>
+<Type>0</Type>
+<Name>cmd_1</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>0</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>144</Top>
+<Bottom>174</Bottom>
+<Left>11</Left>
+<Right>160</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script>resp_msg = 1;
+DialogEx.Close(0);</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>1</DesignCodeLine>
+<DesignCodeCol>18</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<BUTTON>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_button_172x30.btn</Filename>
+<Style>0</Style>
+<State>0</State>
+<Caption/>
+<Align>1</Align>
+<UpColor>16777215</UpColor>
+<HighlightColor>16777215</HighlightColor>
+<DownColor>16777215</DownColor>
+<DisabledColor>16777215</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<CapXOff>0</CapXOff>
+<CapYOff>-2</CapYOff>
+<LeftMargin>0</LeftMargin>
+<RightMargin>0</RightMargin>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</BUTTON>
+</Object>
+<Object>
+<Type>1</Type>
+<Name>Label1</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>1</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>5</Top>
+<Bottom>30</Bottom>
+<Left>6</Left>
+<Right>135</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>-5395712</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>1073744397</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>1078018048</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>3678319</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<Text>
+<Body>WAVES Mod Locker</Body>
+<NormalColor>16756494</NormalColor>
+<HighlightColor>16756494</HighlightColor>
+<MouseDownColor>16756494</MouseDownColor>
+<DisabledColor>12632256</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<Alignment>0</Alignment>
+<Orientation>0</Orientation>
+<AutoSize>1</AutoSize>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+<OriginalRect>
+<Top>5</Top>
+<Bottom>30</Bottom>
+<Left>6</Left>
+<Right>86</Right>
+</OriginalRect>
+</Text>
+</Object>
+<HGuidelines/>
+<VGuidelines/>
+</Page>
+</PageDialog>
+<PageDialog width="320" height="185" dialog_title="SA Launcher" dialog_style="2" movable="1" use_custom_icon="0" custom_icon="" always_on_top="0" resizable="0" min_width="320" min_height="11" fit_custom_mask_to_window="1" custom_mask="">
+<Page>
+<Name>yesno</Name>
+<InheritObs/>
+<InheritBG/>
+<Description/>
+<Keywords/>
+<Background>
+<Type>2</Type>
+<ImageStyle>2</ImageStyle>
+<TopColor>16711680</TopColor>
+<BottomColor>-16777216</BottomColor>
+<UseCustomBackgroundSettings>1</UseCustomBackgroundSettings>
+<TransitionEffect/>
+<TransProps/>
+<NormalImage>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_dialogbar.wsi</Filename>
+</NormalImage>
+</Background>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Show</Name>
+<Args/>
+<Script>if (enablemantido == true) then
+	CheckBox.SetEnabled("chk_manter", true);
+else
+	CheckBox.SetEnabled("chk_manter", false);
+end
+Paragraph.SetText("prg_texto", texto);
+CheckBox.SetChecked("chk_manter", false);
+simao = nao;
+</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>8</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Close</Name>
+<Args/>
+<Script>mantido = CheckBox.GetChecked("chk_manter");
+if (mantido) then
+	manter = "sim";
+else
+	manter = "nao";
+end</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>5</DesignCodeLine>
+<DesignCodeCol>3</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Timer</Name>
+<Args>number e_ID</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Audio</Name>
+<Args>number e_Channel, string e_State</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Key</Name>
+<Args>number e_Key, table e_Modifiers</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Button</Name>
+<Args>number e_Type, number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Move</Name>
+<Args>number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Mouse Wheel</Name>
+<Args>table e_Flags, number e_Delta, number e_X, number e_Y</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Size</Name>
+<Args>number e_WindowWidth, number e_WindowHeight, number e_DialogWidth, number e_DialogHeight, number e_Type</Args>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Object>
+<Type>2</Type>
+<Name>prg_texto</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>44</Top>
+<Bottom>125</Bottom>
+<Left>77</Left>
+<Right>315</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>7040620</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>27502</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<Text>
+<Body>Deseja desativar o plug-in</Body>
+<NormalColor>16777215</NormalColor>
+<HighlightColor>16777215</HighlightColor>
+<MouseDownColor>16777215</MouseDownColor>
+<DisabledColor>12632256</DisabledColor>
+<BorderColor>0</BorderColor>
+<BackColor>16777215</BackColor>
+<FontData>
+<FontName>Segoe UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<Alignment>0</Alignment>
+<TransBG>1</TransBG>
+<VSMode>2</VSMode>
+<HSMode>2</HSMode>
+<SBStyle>1</SBStyle>
+<SBSkin>Windows7</SBSkin>
+<Border>0</Border>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</Text>
+</Object>
+<Object>
+<Type>0</Type>
+<Name>Button124</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>144</Top>
+<Bottom>174</Bottom>
+<Left>11</Left>
+<Right>160</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script>simao = "sim";
+mantido = CheckBox.GetChecked("chk_manter");
+if (mantido) then
+	manter = "sim";
+else
+	manter = "nao";
+end
+
+DialogEx.Close(0);
+</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>9</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<BUTTON>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_button_172x30.btn</Filename>
+<Style>0</Style>
+<State>0</State>
+<Caption>Sim</Caption>
+<Align>1</Align>
+<UpColor>16777215</UpColor>
+<HighlightColor>16777215</HighlightColor>
+<DownColor>16777215</DownColor>
+<DisabledColor>16777215</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<CapXOff>0</CapXOff>
+<CapYOff>-2</CapYOff>
+<LeftMargin>0</LeftMargin>
+<RightMargin>0</RightMargin>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</BUTTON>
+</Object>
+<Object>
+<Type>0</Type>
+<Name>Button131</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>144</Top>
+<Bottom>174</Bottom>
+<Left>160</Left>
+<Right>309</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script>simao = "nao";
+mantido = CheckBox.GetChecked("chk_manter");
+if (mantido) then
+	manter = "sim";
+else
+	manter = "nao";
+end
+
+DialogEx.Close(0);
+</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>9</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<BUTTON>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_button_172x30.btn</Filename>
+<Style>0</Style>
+<State>0</State>
+<Caption>Não</Caption>
+<Align>1</Align>
+<UpColor>16777215</UpColor>
+<HighlightColor>16777215</HighlightColor>
+<DownColor>16777215</DownColor>
+<DisabledColor>16777215</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<CapXOff>0</CapXOff>
+<CapYOff>-2</CapYOff>
+<LeftMargin>0</LeftMargin>
+<RightMargin>0</RightMargin>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</BUTTON>
+</Object>
+<Object>
+<Type>15</Type>
+<Name>chk_manter</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>0</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>125</Top>
+<Bottom>142</Bottom>
+<Left>11</Left>
+<Right>251</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<Options>
+<Text>Manter minha resposta para este plug-in</Text>
+<NormalColor format="hex">c0c0c0</NormalColor>
+<HighlightColor format="hex">c0c0c0</HighlightColor>
+<MouseDownColor format="hex">c0c0c0</MouseDownColor>
+<Disabled format="hex">333333</Disabled>
+<Alignment>0</Alignment>
+<ButtonAlign>0</ButtonAlign>
+<RTLReadingOrder>0</RTLReadingOrder>
+<Checked>0</Checked>
+<MouseOverSoundMode>0</MouseOverSoundMode>
+<MouseOverSound/>
+<MouseClickSoundMode>0</MouseClickSoundMode>
+<MouseClickSound/>
+</Options>
+<Font>
+<FontData>
+<FontName>Segoe UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-12</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Font>
+</Object>
+<Object>
+<Type>0</Type>
+<Name>cmd_sair</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>0</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>0</Top>
+<Bottom>30</Bottom>
+<Left>290</Left>
+<Right>320</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script>img_msg = 3;
+txt_msg = "Deseja cancelar a execução?";
+enablecmd1 = true;
+enablecmd2 = true;
+one_cmdtext = "SIM";
+two_cmdtext = "NÃO";
+DialogEx.Show("any_msg", true, nil, nil);
+if resp_msg == 1 then
+	Application.SaveValue("Adm_Locker", "Force off", "off");
+end
+DialogEx.Close(0);</Script>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>6</DesignCodeLine>
+<DesignCodeCol>20</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<BUTTON>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_button2_30x30.btn</Filename>
+<Style>0</Style>
+<State>0</State>
+<Caption>x</Caption>
+<Align>1</Align>
+<UpColor>16777215</UpColor>
+<HighlightColor>16777215</HighlightColor>
+<DownColor>16777215</DownColor>
+<DisabledColor>16777215</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<CapXOff>0</CapXOff>
+<CapYOff>-2</CapYOff>
+<LeftMargin>0</LeftMargin>
+<RightMargin>0</RightMargin>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</BUTTON>
+</Object>
+<Object>
+<Type>3</Type>
+<Name>img_msg</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>1</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>44</Top>
+<Bottom>105</Bottom>
+<Left>11</Left>
+<Right>72</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>2573</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>0</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>4089197</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>1077985280</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<NormalImage>
+<Filename>Mod_Locker\GUI\Blue_Glass\bg_icon_intrrog.png</Filename>
+<UseTransColor>0</UseTransColor>
+<TransClr>16777215</TransClr>
+<TransTolerance>10</TransTolerance>
+<Opacity>100</Opacity>
+<HTMode>0</HTMode>
+</NormalImage>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+</Object>
+<Object>
+<Type>1</Type>
+<Name>Label1</Name>
+<VisibleAtDesignTime>1</VisibleAtDesignTime>
+<VisibleAtRunTime>1</VisibleAtRunTime>
+<Locked>0</Locked>
+<Enabled>1</Enabled>
+<ToolTip/>
+<Cursor>0</Cursor>
+<Group>0</Group>
+<MaintainAspectRatio>1</MaintainAspectRatio>
+<Pin>0</Pin>
+<TabIndex>-1</TabIndex>
+<AutoResize>0</AutoResize>
+<Coordinates>
+<Top>5</Top>
+<Bottom>30</Bottom>
+<Left>6</Left>
+<Right>135</Right>
+</Coordinates>
+<Ratios>
+<WidthRatio>-1.000000</WidthRatio>
+<HeightRatio>-1.000000</HeightRatio>
+</Ratios>
+<Event>
+<Name>On Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>-5395712</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Right-Click</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>1073744397</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Enter</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>1078018048</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Leave</Name>
+<Args/>
+<Script/>
+<TreeStates>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+<TreeState>0</TreeState>
+</TreeStates>
+<DesignCodeLine>0</DesignCodeLine>
+<DesignCodeCol>3678319</DesignCodeCol>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Actions/>
+<Text>
+<Body>WAVES Mod Locker</Body>
+<NormalColor>16756494</NormalColor>
+<HighlightColor>16756494</HighlightColor>
+<MouseDownColor>16756494</MouseDownColor>
+<DisabledColor>12632256</DisabledColor>
+<FontData>
+<FontName>Calibri</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<Alignment>0</Alignment>
+<Orientation>0</Orientation>
+<AutoSize>1</AutoSize>
+<MouseOverSndMode>0</MouseOverSndMode>
+<MouseOverSound/>
+<MouseClickSndMode>0</MouseClickSndMode>
+<MouseClickSound/>
+<OriginalRect>
+<Top>5</Top>
+<Bottom>30</Bottom>
+<Left>6</Left>
+<Right>135</Right>
+</OriginalRect>
+</Text>
+</Object>
+<HGuidelines/>
+<VGuidelines/>
+</Page>
+</PageDialog>
+</SugDialogs>
+<MissingTechs>
+<DlgTitle>Missing Technologies</DlgTitle>
+<DlgMsg>This program requires the following technologies which cannot be located on your system.
+
+Please double-click on each item to find out how to install it.</DlgMsg>
+<BtnAbort>Abort</BtnAbort>
+<BtnCancel>Continue</BtnCancel>
+<BtnHelp>Help</BtnHelp>
+<ShowHelpBtn>0</ShowHelpBtn>
+<HelpURL>http://www.yourdomain.com/help.htm</HelpURL>
+</MissingTechs>
+<ProgramPrefs>
+<OutputFolder>D:\Projects\WML-One\adm</OutputFolder>
+<EXEName>Adm_Locker.exe</EXEName>
+<EnableAutoPlayFeatureBTF>1</EnableAutoPlayFeatureBTF>
+<EnableAutoPlayFeatureCDRW>1</EnableAutoPlayFeatureCDRW>
+<EnableAutoPlayFeatureISO>1</EnableAutoPlayFeatureISO>
+<EnableAutoPlayFeatureSFX>0</EnableAutoPlayFeatureSFX>
+<TimeStampFilesBTF>0</TimeStampFilesBTF>
+<TimeStampFilesCDRW>0</TimeStampFilesCDRW>
+<TimeStampFilesISO>0</TimeStampFilesISO>
+<ISOImageFile/>
+<SelfExtractingZIPfile/>
+<ZIPMessage>Loading</ZIPMessage>
+<ZIPShowProgress>1</ZIPShowProgress>
+<CDVolumeIdentifier>NEWDISC</CDVolumeIdentifier>
+<CacheFileData>1</CacheFileData>
+<UseBurnProof>1</UseBurnProof>
+<BuildType>1</BuildType>
+<DriveLetter/>
+<UsePassword>0</UsePassword>
+<OpenFolder>0</OpenFolder>
+<ObscureFilenames>1</ObscureFilenames>
+<ObscureDataFolder>Mod_Locker</ObscureDataFolder>
+</ProgramPrefs>
+</DocumentData>

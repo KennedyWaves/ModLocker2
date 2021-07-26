@@ -1,0 +1,12 @@
+--[[================WAVES INFORMATICA================
+==========DEFINICAO PADRAO DE MODS COMPATIVEIS=======
+=================SAN ANDREAS MULTIPLAYER=========]]--
+
+DSS.cs
+Memory512.cs
+BulletHole.asi
+StreamMemFix1.0.asi
+StreamMemFix2.2_test1.asi
+StreamMemFix2.2_test2.asi
+CLEO.asi
+radarrect.asi
